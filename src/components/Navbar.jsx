@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-import "./navbar.css";
+import "./Navbar.css";
 
 function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
