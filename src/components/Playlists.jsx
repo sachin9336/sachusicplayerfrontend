@@ -10,10 +10,10 @@ function Playlist() {
   const progressRef = useRef(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/songs")
+    fetch("https://sachusicplayer.onrender.com/api/songs")
       .then((res) => res.json())
       .then((data) => setSongs(data))
-      .catch((err) => console.error("\u274C Fetch error:", err));
+      .catch((err) => console.error("❌ Fetch error:", err));
   }, []);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ function Playlist() {
         setLoading(false);
         audioRef.current.play()
           .then(() => setIsPlaying(true))
-          .catch(err => console.error("\u274C Play error:", err));
+          .catch(err => console.error("❌ Play error:", err));
       };
 
       audioRef.current.ontimeupdate = () => {
@@ -49,7 +49,7 @@ function Playlist() {
       } else {
         audioRef.current.play()
           .then(() => setIsPlaying(true))
-          .catch(err => console.error("\u274C Play error:", err));
+          .catch(err => console.error("❌ Play error:", err));
       }
     } else {
       setCurrentSongIndex(index);
@@ -71,7 +71,7 @@ function Playlist() {
               src={song.coverImage || song.imageUrl} 
               alt={song.title} 
               style={{ width: "50px", height: "50px", marginRight: "10px", borderRadius: "5px" }}
-              onError={(e) => console.error("\u274C Image Load Error:", e.target.src)}
+              onError={(e) => console.error("❌ Image Load Error:", e.target.src)}
             />
             <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontWeight: "bold" }}>{song.title}</p>
