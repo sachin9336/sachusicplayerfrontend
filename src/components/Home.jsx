@@ -5,39 +5,39 @@ function Home() {
   const [songs, setSongs] = useState([]);
   const [currentSongIndex, setCurrentSongIndex] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [volume, setVolume] = useState(0.5);
   const audioRef = useRef(new Audio());
   const progressRef = useRef(null);
   const location = useLocation();
 
+  // ✅ Songs ko Backend se Fetch karna
   useEffect(() => {
-    fetch("http://localhost:5000/api/songs")
-      .then((res) => res.json())
-      .then((data) => setSongs(data))
-      .catch((err) => console.error("❌ Fetch error:", err));
+    fetch("https://sachusicplayer.onrender.com/api/songs")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setSongs(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("❌ Fetch error:", err);
+        setLoading(false);
+      });
   }, []);
 
-  // 🎯 **Navbar se search ke through song play ho**
+  // 🎯 **Navbar ke Search se Song Play Karna**
   useEffect(() => {
-    if (songs.length === 0) return; // Jab tak songs na mile, run mat karo
+    if (songs.length === 0) return;
 
     const queryParams = new URLSearchParams(location.search);
     const songIdFromSearch = queryParams.get("song");
 
     if (songIdFromSearch) {
-      console.log("🔍 Searching for song ID:", songIdFromSearch);
-
       const index = songs.findIndex((song) => song._id === songIdFromSearch);
-      
       if (index !== -1) {
-        console.log("🎵 Song found! Playing:", songs[index].title);
-
-        // Pehle current song ko pause karo
-        audioRef.current.pause();
-        setIsPlaying(false);
-
-        // Phir naya song play karo
         playSong(index);
       } else {
         console.log("❌ Song not found in list");
@@ -45,6 +45,7 @@ function Home() {
     }
   }, [songs, location.search]);
 
+  // 🔄 **Current Song Load aur Play Karna**
   useEffect(() => {
     if (currentSongIndex === null || songs.length === 0) return;
 
@@ -59,44 +60,46 @@ function Home() {
 
     audioRef.current.oncanplaythrough = () => {
       setLoading(false);
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => console.error("❌ Play error:", err));
+      audioRef.current.play().then(() => setIsPlaying(true));
     };
 
     audioRef.current.ontimeupdate = () => {
       if (progressRef.current) {
-        progressRef.current.value = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+        progressRef.current.value =
+          (audioRef.current.currentTime / audioRef.current.duration) * 100;
       }
     };
 
     audioRef.current.onended = playNext;
   }, [currentSongIndex]);
 
+  // 🔘 **Play/Pause Toggle**
   const togglePlayPause = () => {
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => console.error("❌ Play error:", err));
+      audioRef.current.play().then(() => setIsPlaying(true));
     }
   };
 
+  // 🔊 **Volume Change**
   const changeVolume = (e) => {
     setVolume(e.target.value);
     audioRef.current.volume = e.target.value;
   };
 
+  // ⏭ **Next Song**
   const playNext = () => {
     setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
   };
 
+  // ⏮ **Previous Song**
   const playPrevious = () => {
     setCurrentSongIndex((prevIndex) => (prevIndex - 1 + songs.length) % songs.length);
   };
 
+  // ▶ **Specific Song Play**
   const playSong = (index) => {
     setCurrentSongIndex(index);
     setIsPlaying(true);
@@ -105,6 +108,15 @@ function Home() {
   return (
     <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px", border: "1px solid #ddd", borderRadius: "10px", background: "#f9f9f9" }}>
       <h1 style={{ textAlign: "center" }}>Music Player</h1>
+
+      {/* ⏳ Loader Jab Tak Songs Load Ho Rahe Hain */}
+      {loading && <p style={{ textAlign: "center", color: "#666" }}>Loading songs...</p>}
+
+      {/* 🎵 Songs List */}
+      {!loading && songs.length === 0 && (
+        <p style={{ textAlign: "center", color: "red" }}>No songs available!</p>
+      )}
+
       <ul style={{ listStyle: "none", padding: 0 }}>
         {songs.map((song, index) => (
           <li key={song._id} style={{ display: "flex", alignItems: "center", marginBottom: "10px", padding: "10px", borderBottom: "1px solid #ddd" }}>
@@ -119,9 +131,7 @@ function Home() {
             </div>
             <button
               onClick={() => playSong(index)}
-              style={{
-                padding: "5px 10px", background: "#007bff", color: "white", border: "none", borderRadius: "5px", cursor: "pointer"
-              }}
+              style={{ padding: "5px 10px", background: "#007bff", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}
             >
               {currentSongIndex === index && isPlaying ? "Pause" : "Play"}
             </button>
@@ -129,6 +139,7 @@ function Home() {
         ))}
       </ul>
 
+      {/* 🎵 **Current Song Controls** */}
       {currentSongIndex !== null && (
         <div style={{ textAlign: "center", marginTop: "20px", padding: "10px", background: "#fff", borderRadius: "5px", boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.1)" }}>
           {loading && <p style={{ fontSize: "12px", color: "#666" }}>Loading...</p>}
