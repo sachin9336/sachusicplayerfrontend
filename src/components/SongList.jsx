@@ -15,8 +15,9 @@ const SongList = () => {
 
   const fetchSongs = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/songs");
+      const response = await fetch("https://sachusicplayer.onrender.com/api/songs");
       const data = await response.json();
+      console.log("🎵 Songs fetched:", data);
       setSongs(data);
     } catch (error) {
       console.error("❌ Error fetching songs:", error);
@@ -48,7 +49,7 @@ const SongList = () => {
     if (coverImage) formData.append("coverImage", coverImage);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/songs/${editingSong._id}`, {
+      const response = await fetch(`https://sachusicplayer.onrender.com/api/songs/${editingSong._id}`, {
         method: "PUT",
         body: formData,
       });
@@ -76,7 +77,7 @@ const SongList = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/songs/${songId}`, {
+      const response = await fetch(`https://sachusicplayer.onrender.com/api/songs/${songId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: confirmPassword }),
@@ -97,13 +98,21 @@ const SongList = () => {
   return (
     <div>
       <h2>🎵 Song List</h2>
-      {songs.map((song) => (
-        <div key={song._id}>
-          <h3>{song.title} - {song.artist}</h3>
-          <button onClick={() => handleEdit(song)}>✏️ Edit</button>
-          <button onClick={() => handleDelete(song._id)}>🗑️ Delete</button>
-        </div>
-      ))}
+      {songs.length > 0 ? (
+        songs.map((song) => (
+          <div key={song._id}>
+            <h3>{song.title} - {song.artist}</h3>
+            <audio controls>
+              <source src={song.url} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+            <button onClick={() => handleEdit(song)}>✏️ Edit</button>
+            <button onClick={() => handleDelete(song._id)}>🗑️ Delete</button>
+          </div>
+        ))
+      ) : (
+        <p>🚫 No songs uploaded yet.</p>
+      )}
 
       {editingSong && (
         <form onSubmit={handleUpdate} encType="multipart/form-data">
