@@ -1,7 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import "./Navbar.css";
+
+// ✅ Hardcoded backend URL (Render se mila hua)
+const API_URL = "https://sachusicplayer.onrender.com";
 
 function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,7 +16,7 @@ function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/songs")
+    fetch(`${API_URL}/api/songs`)
       .then((response) => response.json())
       .then((data) => setSongs(data))
       .catch((error) => console.error("Error fetching songs:", error));
@@ -40,9 +43,8 @@ function Navbar() {
     navigate("/admin/login");
   };
 
-  // ✅ Play song in Home.jsx
   const playSongInHome = (song) => {
-    navigate("/", { state: { song } }); // Home.jsx ko song ka data bhejo
+    navigate("/", { state: { song } });
   };
 
   return (
@@ -116,7 +118,6 @@ function Navbar() {
         </ul>
       )}
 
-      {/* ✅ Search Bar */}
       <div className="search-container">
         <input
           type="text"
@@ -131,7 +132,7 @@ function Navbar() {
               <li
                 key={song._id || song.id}
                 className="dropdown-item"
-                onClick={() => playSongInHome(song)} // Home.jsx pe bhejo
+                onClick={() => playSongInHome(song)}
               >
                 {song.title} - {song.artist}
               </li>
