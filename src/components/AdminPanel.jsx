@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 
+// ✅ Backend API URL (Render se mila hua)
+const API_URL = "https://sachusicplayer.onrender.com";
+
 function AdminPanel() {
   const [adminData, setAdminData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin") // ✅ Backend API Call
+    fetch(`${API_URL}/api/admin`) // ✅ Backend API Call
       .then((res) => res.json())
       .then((data) => setAdminData(data))
       .catch((error) => console.error("Error fetching admin data:", error));
@@ -22,13 +25,21 @@ function AdminPanel() {
           </tr>
         </thead>
         <tbody>
-          {adminData.map((admin) => (
-            <tr key={admin._id}>
-              <td>{admin.id}</td>
-              <td>{admin.username}</td>
-              <td>{admin.password}</td>
+          {adminData.length > 0 ? (
+            adminData.map((admin) => (
+              <tr key={admin._id || admin.id}>
+                <td>{admin.id}</td>
+                <td>{admin.username}</td>
+                <td>{admin.password}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3" style={{ textAlign: "center" }}>
+                No Admin Data Available
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
