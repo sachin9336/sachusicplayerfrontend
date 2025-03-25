@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import UploadSongForm from "../components/UploadSongForm";
 import SongList from "../components/SongList";
 
+const API_URL = "https://sachusicplayer.onrender.com/api/songs"; // 🔗 API URL Set
+
 function AdminDashboard() {
   const [songs, setSongs] = useState([]);
   const [error, setError] = useState(null);
@@ -14,7 +16,7 @@ function AdminDashboard() {
 
   const fetchSongs = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/songs");
+      const response = await fetch(API_URL);
       const data = await response.json();
       if (response.ok) {
         setSongs(data);
@@ -29,7 +31,7 @@ function AdminDashboard() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/songs/${id}`, {
+      const response = await fetch(`${API_URL}/${id}`, {
         method: "DELETE",
       });
 
