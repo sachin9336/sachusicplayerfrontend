@@ -16,9 +16,20 @@ const SongList = () => {
   const fetchSongs = async () => {
     try {
       const response = await fetch("https://sachusicplayer.onrender.com/api/songs");
-      const data = await response.json();
-      console.log("🎵 Songs fetched:", data);
-      setSongs(data);
+      let data = await response.json();
+      
+      // Normalize song data to avoid key mismatch issues
+      const normalizedSongs = data.map(song => ({
+        id: song._id,
+        title: song.title,
+        artist: song.artist,
+        songUrl: song.songUrl || song.audioUrl,  // Ensure correct key is used
+        coverImage: song.coverImage || song.imageUrl,  // Ensure correct key is used
+        album: song.album || "Unknown Album"
+      }));
+
+      console.log("🎵 Songs fetched:", normalizedSongs);
+      setSongs(normalizedSongs);
     } catch (error) {
       console.error("❌ Error fetching songs:", error);
     }
@@ -49,7 +60,7 @@ const SongList = () => {
     if (coverImage) formData.append("coverImage", coverImage);
 
     try {
-      const response = await fetch(`https://sachusicplayer.onrender.com/api/songs/${editingSong._id}`, {
+      const response = await fetch(`https://sachusicplayer.onrender.com/api/songs/${editingSong.id}`, {
         method: "PUT",
         body: formData,
       });
@@ -100,14 +111,15 @@ const SongList = () => {
       <h2>🎵 Song List</h2>
       {songs.length > 0 ? (
         songs.map((song) => (
-          <div key={song._id}>
+          <div key={song.id}>
             <h3>{song.title} - {song.artist}</h3>
+            {song.coverImage && <img src={song.coverImage} alt="Cover" width="100" />}
             <audio controls>
-              <source src={song.audioUrl || song.songUrl} type="audio/mpeg" />
+              <source src={song.songUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
             </audio>
             <button onClick={() => handleEdit(song)}>✏️ Edit</button>
-            <button onClick={() => handleDelete(song._id)}>🗑️ Delete</button>
+            <button onClick={() => handleDelete(song.id)}>🗑️ Delete</button>
           </div>
         ))
       ) : (
@@ -116,14 +128,15 @@ const SongList = () => {
 
       {editingSong && (
         <form onSubmit={handleUpdate} encType="multipart/form-data">
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input type="text" value={artist} onChange={(e) => setArtist(e.target.value)} />
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Song Title" />
+          <input type="text" value={artist} onChange={(e) => setArtist(e.target.value)} placeholder="Artist" />
           
           <input type="file" accept="audio/*" onChange={(e) => setAudioFile(e.target.files[0])} />
           <input type="file" accept="image/*" onChange={(e) => setCoverImage(e.target.files[0])} />
           
           <input type="password" placeholder="🔐 Enter Admin Password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <button type="submit">Save Changes</button>
+          <button type="button" onClick={() => setEditingSong(null)}>Cancel</button>
         </form>
       )}
     </div>
