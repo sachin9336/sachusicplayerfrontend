@@ -28,8 +28,8 @@ const SongList = () => {
     setEditingSong(song);
     setTitle(song.title);
     setArtist(song.artist);
-    setAudioFile(null);  // Reset audio file
-    setCoverImage(null); // Reset cover image
+    setAudioFile(null);
+    setCoverImage(null);
   };
 
   const handleUpdate = async (e) => {
@@ -103,7 +103,7 @@ const SongList = () => {
           <div key={song._id}>
             <h3>{song.title} - {song.artist}</h3>
             <audio controls>
-              <source src={song.url} type="audio/mpeg" />
+              <source src={song.audioUrl || song.songUrl} type="audio/mpeg" />
               Your browser does not support the audio element.
             </audio>
             <button onClick={() => handleEdit(song)}>✏️ Edit</button>
