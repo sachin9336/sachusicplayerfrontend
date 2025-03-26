@@ -21,10 +21,13 @@ const UploadSongForm = ({ onSongUpload }) => {
     formData.append("coverImage", coverImage);
 
     try {
-      const response = await fetch("http://localhost:5000/api/songs/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "https://sachusicplayer.onrender.com/api/songs/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Server responded with an error");
@@ -45,7 +48,9 @@ const UploadSongForm = ({ onSongUpload }) => {
 
   return (
     <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload New Song</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        Upload New Song
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
