@@ -9,7 +9,6 @@ function Login() {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  // ✅ User Already Logged in? Redirect to Profile
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -23,7 +22,7 @@ function Login() {
     setSuccess("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("https://sachusicplayer.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -36,7 +35,7 @@ function Login() {
       localStorage.setItem("token", data.token);
 
       setTimeout(() => {
-        navigate("/Profile"); // ✅ Redirect to Profile after login
+        navigate("/Profile");
       }, 2000);
     } catch (err) {
       setError(err.message);
@@ -55,7 +54,6 @@ function Login() {
         background: "linear-gradient(135deg, #3a7bd5, #3a6073)",
       }}
     >
-      {/* Login Box */}
       <div
         style={{
           background: "white",
@@ -72,7 +70,6 @@ function Login() {
         {success && <p style={{ color: "green" }}>{success}</p>}
 
         <form onSubmit={handleSubmit}>
-          {/* Email Field */}
           <div
             style={{
               display: "flex",
@@ -100,7 +97,6 @@ function Login() {
             />
           </div>
 
-          {/* Password Field */}
           <div
             style={{
               display: "flex",
@@ -128,7 +124,6 @@ function Login() {
             />
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             style={{
@@ -149,7 +144,6 @@ function Login() {
             Login
           </button>
 
-          {/* Links */}
           <div
             style={{
               marginTop: "15px",
@@ -168,7 +162,6 @@ function Login() {
         </form>
       </div>
 
-      {/* Footer */}
       <footer
         style={{
           position: "fixed",
