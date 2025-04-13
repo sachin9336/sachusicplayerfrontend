@@ -14,7 +14,7 @@ function AdminDashboard() {
 
   const fetchSongs = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/songs");
+      const response = await fetch("https://sachusicplayer.onrender.com/api/songs");
       const data = await response.json();
       if (response.ok) {
         setSongs(data);
@@ -29,7 +29,7 @@ function AdminDashboard() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/songs/${id}`, {
+      const response = await fetch(`https://sachusicplayer.onrender.com/api/songs/${id}`, {
         method: "DELETE",
       });
 
