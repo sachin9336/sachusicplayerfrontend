@@ -56,7 +56,7 @@ function Home() {
 
   // Fetch songs
   useEffect(() => {
-    fetch("http://localhost:5000/api/songs")
+    fetch("https://sachusicplayer.onrender.com/api/songs")
       .then(res => res.json())
       .then(data => {
         setSongs(data);
