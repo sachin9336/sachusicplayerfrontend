@@ -320,6 +320,7 @@ function Home() {
           color: white;
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           min-height: 100vh;
+          width: 100vw;
           box-sizing: border-box;
         }
 
