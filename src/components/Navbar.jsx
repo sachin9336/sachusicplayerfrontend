@@ -17,7 +17,7 @@ function Navbar() {
 
   // Fetch songs data
   useEffect(() => {
-    fetch("http://localhost:5000/api/songs")
+    fetch("https://sachusicplayer.onrender.com/api/songs")
       .then((response) => response.json())
       .then((data) => setSongs(data))
       .catch((error) => console.error("Error fetching songs:", error));
