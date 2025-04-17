@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";  
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
@@ -16,7 +16,7 @@ const Profile = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch("https://sachusicplayer.onrender.com/api/auth/user", {
+      const response = await fetch("https://sachusicplayer.onrender.com/api/auth/user", {  // API URL updated
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
