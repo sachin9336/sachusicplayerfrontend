@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";  
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
 
   useEffect(() => {
     if (!token) {
@@ -16,7 +17,7 @@ const Profile = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch("https://sachusicplayer.onrender.com/api/auth/user", {  // API URL updated
+      const response = await fetch("https://sachusicplayer.onrender.com/api/auth/user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -25,8 +26,8 @@ const Profile = () => {
       });
 
       if (response.status === 401) {
-        console.log("Token expired, logging out...");
-        handleLogout(); // Expired token me direct logout
+        console.log("Token expired, attempting to refresh...");
+        await handleTokenRefresh();
       } else if (response.ok) {
         const data = await response.json();
         setUser(data);
@@ -38,10 +39,35 @@ const Profile = () => {
     }
   };
 
+  const handleTokenRefresh = async () => {
+    try {
+      const refreshResponse = await fetch("http://localhost:5000/api/auth/refresh-token", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (refreshResponse.ok) {
+        const data = await refreshResponse.json();
+        localStorage.setItem("token", data.token); // New access token
+        fetchUserData(); // Try fetching the user data again with the new token
+      } else {
+        console.log("Failed to refresh token, logging out...");
+        handleLogout();
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      handleLogout();
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     setUser(null);
-    navigate("/login"); // Page refresh ke bina logout handle hoga
+    navigate("/login");
   };
 
   return (
@@ -50,17 +76,14 @@ const Profile = () => {
         <h1 style={styles.title}>Profile</h1>
         {user ? (
           <div style={styles.details}>
-            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Name:</strong> {user.username}</p>
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Role:</strong> {user.role || "User"}</p>
           </div>
         ) : (
           <p style={styles.loading}>Loading user data...</p>
         )}
-        <button 
-          style={styles.button} 
-          onClick={handleLogout}
-        >
+        <button style={styles.button} onClick={handleLogout}>
           Logout
         </button>
       </div>
@@ -117,7 +140,7 @@ const styles = {
     marginTop: "20px",
     transition: "0.3s ease-in-out",
     textAlign: "center",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.3)", // Button aur visible hoga
+    boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
   },
 };
 
